@@ -8,6 +8,7 @@ import Addcar from './Addcar';
 export default function Carlist() {
   const [cars, setCars] = useState([]);
   const [open, setOpen] = useState(false);
+  const [msg, setMsg] = useState('');
 
   useEffect(() => {
     getCars();
@@ -24,7 +25,10 @@ export default function Carlist() {
     if (window.confirm('Are you sure?')) {
       fetch(link, {method: 'DELETE'})
       .then(_ => getCars())
-      .then(_ => setOpen(true))
+      .then(_ => {
+        setMsg('Car deleted');
+        setOpen(true);
+      })
       .catch(err => console.error(err))
     }
   }
@@ -40,6 +44,10 @@ export default function Carlist() {
       }
     )  
     .then(_ => getCars())
+    .then(_ => {
+      setMsg('New car added');
+      setOpen(true);
+    })
     .catch(err => console.error(err))  
   }
 
@@ -87,7 +95,7 @@ export default function Carlist() {
       <ReactTable filterable={true} defaultPageSize={10} 
         data={cars} columns={columns} />
       <Snackbar open={open} autoHideDuration={3000} 
-        onClose={handleClose} message="Car deleted succesfully" />
+        onClose={handleClose} message={msg} />
     </div>
   )
 }
