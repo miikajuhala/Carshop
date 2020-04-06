@@ -23,10 +23,24 @@ export default function Carlist() {
   const deleteCar = (link) => {
     if (window.confirm('Are you sure?')) {
       fetch(link, {method: 'DELETE'})
-      .then(response => getCars())
+      .then(_ => getCars())
       .then(_ => setOpen(true))
       .catch(err => console.error(err))
     }
+  }
+
+  const addCar = (car) => {
+    fetch('https://carstockrest.herokuapp.com/cars',
+      {
+        method: 'POST',
+        headers: {
+          'Content-Type':'application/json'
+        },
+        body: JSON.stringify(car)
+      }
+    )  
+    .then(_ => getCars())
+    .catch(err => console.error(err))  
   }
 
   const handleClose = () => {
@@ -69,7 +83,7 @@ export default function Carlist() {
 
   return(
     <div>
-      <Addcar />
+      <Addcar addCar={addCar}/>
       <ReactTable filterable={true} defaultPageSize={10} 
         data={cars} columns={columns} />
       <Snackbar open={open} autoHideDuration={3000} 
