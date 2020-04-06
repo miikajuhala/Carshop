@@ -4,6 +4,7 @@ import 'react-table-v6/react-table.css';
 import Button from '@material-ui/core/Button';
 import Snackbar from '@material-ui/core/Snackbar';
 import Addcar from './Addcar';
+import Editcar from './Editcar';
 
 export default function Carlist() {
   const [cars, setCars] = useState([]);
@@ -51,6 +52,22 @@ export default function Carlist() {
     .catch(err => console.error(err))  
   }
 
+  const updateCar = (link, car) => {
+    fetch(link, {
+      method: 'PUT',
+      headers: {
+        'Content-Type':'application/json'
+      },
+      body: JSON.stringify(car)
+    })
+    .then(_ => getCars())
+    .then(_ => {
+      setMsg('Car updated');
+      setOpen(true);
+    })
+    .catch(err => console.error(err))  
+  }
+
   const handleClose = () => {
     setOpen(false);
   }
@@ -79,6 +96,9 @@ export default function Carlist() {
     {
       Header: 'Price (€)',
       accessor: 'price'
+    },
+    {
+      Cell: row => (<Editcar car={row.original} updateCar={updateCar} />)
     },
     {
       accessor: '_links.self.href',
