@@ -6,16 +6,23 @@ import DialogActions from '@material-ui/core/DialogActions';
 import DialogContent from '@material-ui/core/DialogContent';
 import DialogTitle from '@material-ui/core/DialogTitle';
 
+
+
 export default function Addcar(props) {
   const [open, setOpen] = useState(false);
-  const [car, setCar] = useState({brand: '', model: '', color: '', year: '', fuel: '', price: ''});
+  const [car1, setCar1] = useState({brand: '', model: '', color: '', year: '', fuel: '', price: ''});
 
   const handleClickOpen = () => {
+    console.log(props.car)
+    if(props.car != null){
+    setCar1({brand: props.car.brand, model: props.car.model, color: props.car.color,
+      fuel: props.car.fuel, year: props.car.year, price: props.car.price })
+    }
     setOpen(true);
   }
 
   const handleClose = () => {
-    props.addCar(car);
+    props.addCar(car1);
     setOpen(false);
   }
 
@@ -24,14 +31,19 @@ export default function Addcar(props) {
   }
 
   const inputChanged = (event) => {
-    setCar({...car, [event.target.name]: event.target.value});
+    setCar1({...car1, [event.target.name]: event.target.value});
   }
 
   return(
     <div>
-      <Button style={{margin: 10}} variant="outlined" color="primary" onClick={handleClickOpen}>
+      {props.car != null && <Button style={{margin: 10}} variant="outlined" color="primary" onClick={handleClickOpen}>
+        Quick add similar
+      </Button>}
+
+      {props.car == null && <Button style={{margin: 10}} variant="outlined" color="primary" onClick={handleClickOpen}>
         Add car
-      </Button>
+      </Button>}
+
       <Dialog open={open} disableBackdropClick={true} disableEscapeKeyDown={true} onClose={handleClose} aria-labelledby="form-dialog-title">
         <DialogTitle id="form-dialog-title">New car</DialogTitle>
         <DialogContent>
@@ -40,7 +52,7 @@ export default function Addcar(props) {
             margin="dense"
             id="brand"
             name="brand"
-            value={car.brand}
+            value={car1.brand}
             onChange={inputChanged}
             label="Brand"
             fullWidth
@@ -49,7 +61,7 @@ export default function Addcar(props) {
             margin="dense"
             id="model"
             name="model"
-            value={car.model}
+            value={car1.model}
             onChange={inputChanged}
             label="Model"
             fullWidth
@@ -58,7 +70,7 @@ export default function Addcar(props) {
             margin="dense"
             id="color"
             name="color"
-            value={car.color}
+            value={car1.color}
             onChange={inputChanged}
             label="Color"
             fullWidth
@@ -67,7 +79,7 @@ export default function Addcar(props) {
             margin="dense"
             id="fuel"
             name="fuel"
-            value={car.fuel}
+            value={car1.fuel}
             onChange={inputChanged}
             label="Fuel"
             fullWidth
@@ -76,7 +88,7 @@ export default function Addcar(props) {
             margin="dense"
             id="year"
             name="year"
-            value={car.year}
+            value={car1.year}
             onChange={inputChanged}
             label="Year"
             fullWidth
@@ -85,7 +97,7 @@ export default function Addcar(props) {
             margin="dense"
             id="price"
             name="price"
-            value={car.price}
+            value={car1.price}
             onChange={inputChanged}
             label="Price (€)"
             fullWidth

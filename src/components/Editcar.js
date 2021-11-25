@@ -12,21 +12,25 @@ export default function Editcar(props) {
 
   const handleClickOpen = () => {
     console.log(props.car);
+    //laittaa car olioo olemassa olevan auton infot ja lähetää ne + muokatut
     setCar({brand: props.car.brand, model: props.car.model, color: props.car.color,
             fuel: props.car.fuel, year: props.car.year, price: props.car.price });
     setOpen(true);
   }
 
   const handleClose = () => {
+    //lähettää propsi auton self linkin millä päivittää + infot päivityksestä
     props.updateCar(props.car._links.self.href, car);
     setOpen(false);
   }
 
   const handleCancel = () => {
+    //jos ei paineta save niin sulkee vaan popupin
     setOpen(false);
   }
 
   const inputChanged = (event) => {
+    //laittaa siihen attribuuttiin infon mitä muokataan
     setCar({...car, [event.target.name]: event.target.value});
   }
 

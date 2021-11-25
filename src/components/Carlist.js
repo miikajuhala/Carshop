@@ -5,26 +5,32 @@ import Button from '@material-ui/core/Button';
 import Snackbar from '@material-ui/core/Snackbar';
 import Addcar from './Addcar';
 import Editcar from './Editcar';
+import axios from 'axios';
 
+
+//lähes sama kun esimerkki, + axios ja omaa ymmärtämistä selkeyttävä logiikka + kommentit
 export default function Carlist() {
   const [cars, setCars] = useState([]);
   const [open, setOpen] = useState(false);
   const [msg, setMsg] = useState('');
+
+
+  const url="https://carstockrest.herokuapp.com"
 
   useEffect(() => {
     getCars();
   }, [])
 
   const getCars = () => {
-    fetch('https://carstockrest.herokuapp.com/cars')
-    .then(response => response.json())
+    axios.get(url+"/cars")
+    .then(response => response.data)
     .then(data => setCars(data._embedded.cars))
     .catch(err => console.error(err))
   }
 
   const deleteCar = (link) => {
     if (window.confirm('Are you sure?')) {
-      fetch(link, {method: 'DELETE'})
+      axios.delete(link)
       .then(_ => getCars())
       .then(_ => {
         setMsg('Car deleted');
@@ -34,14 +40,15 @@ export default function Carlist() {
     }
   }
 
-  const addCar = (car) => {
-    fetch('https://carstockrest.herokuapp.com/cars',
-      {
-        method: 'POST',
-        headers: {
-          'Content-Type':'application/json'
-        },
-        body: JSON.stringify(car)
+  const addCar = (car1) => {
+    axios.post(url+'/cars',{
+      //voi ehkä tehdä data.body: JSON.stringify(car1)
+        brand: car1.brand,  
+        model: car1.model,  
+        color: car1.color,  
+        fuel: car1.fuel,  
+        year: car1.year,    
+        price: car1.price 
       }
     )  
     .then(_ => getCars())
@@ -52,13 +59,14 @@ export default function Carlist() {
     .catch(err => console.error(err))  
   }
 
-  const updateCar = (link, car) => {
-    fetch(link, {
-      method: 'PUT',
-      headers: {
-        'Content-Type':'application/json'
-      },
-      body: JSON.stringify(car)
+  const updateCar = (link, car1) => {
+    axios.put(link, {
+      brand: car1.brand,  
+      model: car1.model,  
+      color: car1.color,  
+      fuel: car1.fuel,  
+      year: car1.year,    
+      price: car1.price 
     })
     .then(_ => getCars())
     .then(_ => {
@@ -75,44 +83,54 @@ export default function Carlist() {
   const columns = [
     {
       Header: 'Brand',
-      accessor: 'brand'
+      accessor: 'brand' // accessor is the "key" in the data
     },
     {
       Header: 'Model',
-      accessor: 'model'
+      accessor: 'model' // accessor is the "key" in the data
     },    
     {
       Header: 'Color',
-      accessor: 'color'
+      accessor: 'color'  // accessor is the "key" in the data
     }, 
     {
       Header: 'Year',
-      accessor: 'year'
+      accessor: 'year'  // accessor is the "key" in the data
     },    
     {
       Header: 'Fuel',
-      accessor: 'fuel'
+      accessor: 'fuel'  // accessor is the "key" in the data
     },
     {
       Header: 'Price (€)',
-      accessor: 'price'
+      accessor: 'price'  // accessor is the "key" in the data
     },
     {
+      //ottaa row.original saa siitä infot rivin car objectista
       Cell: row => (<Editcar car={row.original} updateCar={updateCar} />)
     },
     {
-      accessor: '_links.self.href',
+      accessor: '_links.self.href',  // accessor is the "key" in the data
       filterable: false,
       sortable: false,
-      minWidth: 60,
-      Cell: row => (<Button color="secondary" size="small" onClick={() => deleteCar(row.value)}>Delete</Button>)
+      minWidth: 90,
+      //tässä row.value vittaa "accessor" valueen mikä on auton self url
+      Cell: row => (<Button color="secondary" size="small" onClick={() => deleteCar(row.value)}>Delete Car: {row.value.slice(-1)}</Button>)
+    },{
+      
+      filterable: false,
+      sortable: false,
+      minWidth: 90,
+
+      Cell: row => (<Addcar car={row.original} addCar={addCar}> add similar</Addcar>)
     }
   ]
 
   return(
     <div>
       <Addcar addCar={addCar}/>
-      <ReactTable filterable={true} defaultPageSize={10} 
+      {/* https://www.npmjs.com/package/react-table-v6 */}
+      <ReactTable filterable={true} defaultPageSize={15} 
         data={cars} columns={columns} />
       <Snackbar open={open} autoHideDuration={3000} 
         onClose={handleClose} message={msg} />
